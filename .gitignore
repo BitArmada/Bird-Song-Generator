@@ -1,0 +1,10 @@
+# virtual environment
+env/
+__pycache__/
+
+# data directory
+processed_spectrograms/
+saved_models/
+saved_models v2/
+saved_models v3/
+saved_models(posterior collapse)/
