@@ -304,7 +304,7 @@ function plot_latent_space(zoom, panx, pany){
 
     ctx.font = `${fontsize}px Arial`;
 
-    const radius = Math.max(0.005/zoom, 0.02);
+    const radius = Math.max(0.005/zoom, 0.01);
 
     for(var i = 0; i < embeddingData.length; i++){
 
@@ -324,7 +324,7 @@ function plot_latent_space(zoom, panx, pany){
         ctx.fillStyle = colors[i];
         ctx.fill();
 
-        if(zoom > 0.1){
+        if(zoom > 0.3){
             ctx.fillStyle = "rgba(255,255,255,0.5)"; 
             ctx.fillText(chunkData.label, UMAP[0]-fontsize*5, UMAP[1]+radius);
         }
