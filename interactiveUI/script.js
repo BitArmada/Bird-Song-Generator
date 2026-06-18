@@ -675,6 +675,17 @@ function downloadAudio() {
         return;
     }
 
+    // Calculate auto-scale factor if enabled
+    let scaleFactor = 1.0;
+    if (autoScaleVolume) {
+        scaleFactor = calculateAutoScaleFactor(currentAudioData);
+    }
+
+    const scaledAudioData = new Float32Array(currentAudioData.length);
+    for (let i = 0; i < currentAudioData.length; i++) {
+        scaledAudioData[i] = currentAudioData[i] * volume * scaleFactor;
+    }
+
     // Convert float PCM to WAV
     const numberOfChannels = 1;
     const sampleRate = currentAudioSampleRate;
@@ -685,7 +696,7 @@ function downloadAudio() {
     const blockAlign = numberOfChannels * bytesPerSample;
 
     // Create WAV header
-    const arrayBuffer = new ArrayBuffer(44 + currentAudioData.length * bytesPerSample);
+    const arrayBuffer = new ArrayBuffer(44 + scaledAudioData.length * bytesPerSample);
     const view = new DataView(arrayBuffer);
 
     // WAV header
@@ -696,7 +707,7 @@ function downloadAudio() {
     };
 
     writeString(0, 'RIFF');
-    view.setUint32(4, 36 + currentAudioData.length * bytesPerSample, true);
+    view.setUint32(4, 36 + scaledAudioData.length * bytesPerSample, true);
     writeString(8, 'WAVE');
     writeString(12, 'fmt ');
     view.setUint32(16, 16, true);
@@ -707,12 +718,12 @@ function downloadAudio() {
     view.setUint16(32, blockAlign, true);
     view.setUint16(34, bitDepth, true);
     writeString(36, 'data');
-    view.setUint32(40, currentAudioData.length * bytesPerSample, true);
+    view.setUint32(40, scaledAudioData.length * bytesPerSample, true);
 
     // Convert float to 16-bit PCM
     let offset = 44;
-    for (let i = 0; i < currentAudioData.length; i++) {
-        const sample = Math.max(-1, Math.min(1, currentAudioData[i]));
+    for (let i = 0; i < scaledAudioData.length; i++) {
+        const sample = Math.max(-1, Math.min(1, scaledAudioData[i]));
         view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
         offset += 2;
     }
