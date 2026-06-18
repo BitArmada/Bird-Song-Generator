@@ -7,13 +7,451 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
     <script type="module" src="script.js" defer></script>
     <style>
-        body{
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
             margin: 0;
             overflow: hidden;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            touch-action: none;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            background: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 100vh;
+            overflow-y: auto;
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .menu-overlay::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .menu-overlay::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .menu-overlay::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .menu-overlay::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile layout (bottom) */
+        @media (max-width: 768px) {
+            .menu-overlay {
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 12px 12px 0 0;
+                max-height: 50vh;
+                width: 100%;
+                padding: 16px;
+            }
+        }
+
+        /* Desktop layout (side) */
+        @media (min-width: 769px) {
+            .menu-overlay {
+                right: 20px;
+                top: 20px;
+                width: 320px;
+                max-height: calc(100vh - 40px);
+            }
+        }
+
+        .overlay-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Selected Datapoints Section */
+        .selected-datapoints-container {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        }
+
+        .selected-datapoints-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .selected-datapoints-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .selected-datapoints-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+        }
+
+        .datapoint-tag {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background-color: #ff6b6b;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            gap: 8px;
+        }
+
+        .datapoint-tag-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .datapoint-tag-remove {
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 0;
+            transition: background-color 0.2s;
+        }
+
+        .datapoint-tag-remove:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: #374151;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-icon {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+        }
+
+        .btn-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Spectrogram Section */
+        .spectrogram-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .spectrogram-with-volume {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .spectrogram-canvas-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        #spectrogram-canvas {
+            width: 100%;
+            height: 120px;
+            background-color: #0f0f12;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: block;
+        }
+
+        .volume-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 0 8px;
+        }
+
+        .volume-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-weight: 600;
+        }
+
+        .volume-slider {
+            width: 30px;
+            height: 100px;
+            appearance: slider-vertical;
+            -webkit-appearance: slider-vertical;
+            writing-mode: bt-lr;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        input[type="range"].volume-slider {
+            accent-color: #4f46e5;
+        }
+
+        .volume-value {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            width: 24px;
+            text-align: center;
+        }
+
+        .spectrogram-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .spectrogram-controls button {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 4px 0;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 12px 0;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+        }
+
+        /* Mode Indicator */
+        .mode-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 20, 25, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .mode-indicator::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4ecdc4;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .mode-indicator.selecting::before {
+            background-color: #4f46e5;
+        }
+
+        .mode-indicator.panning::before {
+            background-color: #4ecdc4;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Mobile Controls */
+        #mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        #mobile-controls button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        #mobile-controls button:active {
+            background-color: #4338ca;
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            #mobile-controls {
+                display: flex;
+            }
         }
     </style>
 </head>
 <body>
-    <canvas id = "canvas"></canvas>
+    <canvas id="canvas"></canvas>
+    
+    <!-- Mode Indicator -->
+    <div class="mode-indicator selecting" id="mode-indicator">
+        Selecting
+    </div>
+
+    <div class="menu-overlay">
+        <!-- Selected Datapoints Section -->
+        <div class="overlay-section">
+            <h3 class="section-title">Selected Datapoints</h3>
+            <div class="selected-datapoints-container" id="selected-datapoints">
+                <!-- Datapoints will be generated by JavaScript -->
+                <div class="empty-state">No datapoints selected</div>
+            </div>
+            <button class="btn-primary" id="addDatapointButton" style="width: 100%;">+ Add Datapoint</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Generate Section -->
+        <div class="overlay-section">
+            <button class="btn-primary" id="generateHybridButton" style="width: 100%;">Generate Hybrid</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Spectrogram Section -->
+        <div class="overlay-section">
+            <h3 class="section-title">Generated Audio</h3>
+            <div class="spectrogram-container">
+                <div class="spectrogram-with-volume">
+                    <div class="spectrogram-canvas-wrapper">
+                        <canvas id="spectrogram-canvas"></canvas>
+                    </div>
+                    <div class="volume-control">
+                        <div class="volume-label">Vol</div>
+                        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1000" value="250" />
+                        <div class="volume-value"><span id="volumeValue">250</span>%</div>
+                    </div>
+                </div>
+                <div class="spectrogram-controls">
+                    <button class="btn-secondary" id="playAudioButton" style="flex: 1;">▶ Play</button>
+                    <button class="btn-secondary" id="downloadAudioButton" style="flex: 1;">⬇ Download</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; padding-top: 4px;">
+                    <input type="checkbox" checked id="autoScaleCheckbox" style="cursor: pointer; width: 16px; height: 16px;">
+                    <label for="autoScaleCheckbox" style="font-size: 12px; color: rgba(255, 255, 255, 0.7); cursor: pointer; flex: 1;">Auto-scale volume</label>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
