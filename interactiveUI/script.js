@@ -118,9 +118,9 @@ for(var i = 0; i < embeddingData.length; i++){
     colors.push(`hsla(${(labels.indexOf(embeddingData[i].label)/labels.length)*360}, 100%, 50%, 50%)`);
 }
 
-var zoom = 0.05;
-var panx = 0;
-var pany = 0;
+var zoom = 0.095569634676;
+var panx = -0.6087862155379818;
+var pany = -8.336139088914303;
 var panning = false;
 var mouseposx = 0;
 var mouseposy = 0;
@@ -253,6 +253,8 @@ function mousemove(event){
 }
 
 function canvasClick(event) {
+
+    // console.log(zoom, panx, pany)
 
     console.log(mode)
 
