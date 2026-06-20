@@ -70,7 +70,7 @@ $$
 The total reconstruction loss is a weighted sum of all of these loss functions.
 
 $$
-R_{total} = R_{MSE}*\theta_{MSE}+R_{Spectral}*\theta_{Spectral}+R_{edge}*\theta_{edge}
+R_{total} = R_{MSE} * \theta_{MSE} + R_{Spectral} * \theta_{Spectral} + R_{edge} * \theta_{edge}
 $$
 
 All the hyperparameters $\theta$ for the model are stored in a data class called ```VAEhyperparameters```. The default values are those that  I used to train the most successful model.
