@@ -54,18 +54,21 @@ R_{MSE} = \frac{1}{N}\sum_{i=1}^{N}{(y_i-\hat{y}_i)^2}
 $$
 
 The Frobenious normalized error is similar to MSE, but does not depend on the scale of the output. 
+
 $$
-% R_{Spectral} = \frac{1}{N}\sum_{i=1}^{N}{\frac{\lVert Y_i-\hat{Y}_i \rVert_F}{ \lVert \hat{Y}_i \rVert_F}}
 R_{Spectral} = {\frac{\lVert Y_i-\hat{Y}_i \rVert_F}{ \lVert \hat{Y}_i \rVert_F}}
 $$
+
 Where $Y_i$ and $\hat{Y}_i$ are the reconstructed and target spectrogram matrices, respectively.
 
 The edge loss penalizes the model if the spatial gradients of the reconstructed spectrogram do not match the target’s spatial gradients.
+
 $$
 R_{edge} = \frac{1}{N}\sum_{i=1}^{N}{(\nabla_xY_i-\nabla_x\hat{Y}_i)^2+(\nabla_yY_i-\nabla_y\hat{Y}_i)^2}
 $$
 
 The total reconstruction loss is a weighted sum of all of these loss functions.
+
 $$
 R_{total} = R_{MSE}*\theta_{MSE}+R_{Spectral}*\theta_{Spectral}+R_{edge}*\theta_{edge}
 $$
