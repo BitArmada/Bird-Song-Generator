@@ -130,11 +130,11 @@ Latent Vectors in UMAP Web UI and Generated spectrogram
 
 <img src="images/image-5.png" width="55%" /><img src="images/image-4.png" width="45%" />
 
+Audio File: 
 [Barn Swallow x Corn Bunting](examples/Barn%20Swallow%20x%20Corn%20Bunting.wav)
 
 <audio controls>
   <source src="examples/Barn Swallow x Corn Bunting.wav" type="audio/wav">
-  Your browser does not support the audio element.
 </audio>
 
 #### Coal Tit x Eurasian Wren
@@ -142,11 +142,11 @@ Latent Vectors in UMAP Web UI and Generated spectrogram
 
 <img src="images/Coat Tit x Eurasian Wren Latent.png" width="47%" /><img src="images/Coal Tit x Eurasian Wren.png" width="53%" />
 
+Audio File: 
 [Coal Tit x Eurasian Wren](examples/Coat%20Tit%20x%20Eurasian%20Wren.wav)
 
 <audio controls>
   <source src="examples/Coat Tit x Eurasian Wren.wav" type="audio/wav">
-  Your browser does not support the audio element.
 </audio>
 
 #### Garden Warbler x Redwing
@@ -154,11 +154,11 @@ Latent Vectors in UMAP Web UI and Generated spectrogram
 
 <img src="images/Garden Warbler x Redwing Latent.png" width="52%" /><img src="images/Garden Warbler x Redwing.png" width="48%" />
 
+Audio File: 
 [Garden Warbler x Redwing](examples/Garden%20Warbler%20x%20Redwing.wav)
 
 <audio controls>
   <source src="examples/Garden Warbler x Redwing.wav" type="audio/wav">
-  Your browser does not support the audio element.
 </audio>
 
 
@@ -167,11 +167,11 @@ Latent Vectors in UMAP Web UI and Generated spectrogram
 
 <img src="images/Song Thrush x Garden Warbler x Barn Swallow Latent.png" width="50%" /><img src="images/Song Thrush x Garden Warbler x Barn Swallow.png" width="50%" />
 
+Audio File: 
 [Song Thrush x Garden Warbler x Barn Swallow](examples/Song%20Thrush%20x%20Garden%20Warbler%20x%20Barn%20Swallow.wav)
 
 <audio controls>
   <source src="examples/Song Thrush x Garden Warbler x Barn Swallow.wav" type="audio/wav">
-  Your browser does not support the audio element.
 </audio>
 
 Generate your own Birdsong Hybrids with the [Interactive Web UI](https://bitarmada.github.io/Bird-Song-Generator/interactiveUI/).
