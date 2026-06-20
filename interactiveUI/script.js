@@ -192,8 +192,8 @@ canvas.addEventListener("touchend", touchEnd)
 window.addEventListener("resize", handleCanvasResize)
 
 
-var addButton = document.getElementById('addDatapointButton');
-addButton.addEventListener('click', addDatapoint);
+// var addButton = document.getElementById('addDatapointButton');
+// addButton.addEventListener('click', addDatapoint);
 
 var playButton = document.getElementById('playAudioButton');
 playButton.addEventListener('click', playAudio);
